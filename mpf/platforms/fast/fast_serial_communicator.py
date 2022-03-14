@@ -1,6 +1,6 @@
 """Fast serial communicator."""
 import asyncio
-from distutils.version import StrictVersion
+from packaging.version import Version
 from mpf.platforms.fast import fast_defines
 
 from mpf.core.utility_functions import Util
@@ -143,7 +143,7 @@ class FastSerialCommunicator(BaseSerialCommunicator):
 
         if self.remote_model.startswith(RETRO_ID):
             self.is_retro = True
-        elif StrictVersion(self.remote_firmware) < StrictVersion(V2_FW):
+        elif Version(self.remote_firmware) < Version(V2_FW):
             self.is_legacy = True
 
         self.platform.log.info("Connected! Processor: %s, "
@@ -197,7 +197,7 @@ class FastSerialCommunicator(BaseSerialCommunicator):
         else:
             raise AttributeError(f"Unrecognized FAST processor type: {self.remote_processor}")
 
-        if StrictVersion(min_version) > StrictVersion(self.remote_firmware):
+        if Version(min_version) > Version(self.remote_firmware):
             raise AssertionError(f'Firmware version mismatch. MPF requires the {self.remote_processor} processor '
                                  f'to be firmware {min_version}, but yours is {self.remote_firmware}')
 
@@ -315,7 +315,7 @@ class FastSerialCommunicator(BaseSerialCommunicator):
                                     node_id, model, fw, int(sw, 16), int(dr, 16))
 
             min_fw = IO_LEGACY_MIN_FW if self.is_legacy else IO_MIN_FW
-            if StrictVersion(min_fw) > str(fw):
+            if Version(min_fw) > Version(fw):
                 self.platform.log.critical("Firmware version mismatch. MPF requires the IO boards "
                                            "to be firmware %s, but your Board %s (%s) is firmware %s",
                                            min_fw, node_id, model, fw)
@@ -358,6 +358,21 @@ class FastSerialCommunicator(BaseSerialCommunicator):
             # Don't log W(atchdog) or L(ight) messages, they are noisy
             if debug and msg[0] != "W" and msg[0] != "L":
                 self.platform.log.debug("Send: %s", msg)
+
+            # MOCK AC Relay switch until it's supported by the platform
+            if msg[0:8] == "DL:13,C1":
+                print("Platforms: %s" % self.machine.hardware_platforms)
+                self.machine.clock.schedule_once(
+                    lambda: self.machine.switch_controller.process_switch('s_ac_relay', 1, logical=True),
+                    self.machine.hardware_platforms['system11'].system11_config['ac_relay_delay_ms'] / 1000
+                )
+            elif msg[0:5] == "TL:13":
+
+                print("Platforms: %s" % self.machine.hardware_platforms)
+                self.machine.clock.schedule_once(
+                    lambda: self.machine.switch_controller.process_switch('s_ac_relay', 0, logical=True),
+                    self.machine.hardware_platforms['system11'].system11_config['ac_relay_delay_ms'] / 1000
+                )
 
     async def _socket_writer(self):
         while True:
