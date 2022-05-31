@@ -360,6 +360,8 @@ class FastSerialCommunicator(BaseSerialCommunicator):
                 self.platform.log.debug("Send: %s", msg)
 
             # MOCK AC Relay switch until it's supported by the platform
+            if not self.machine.hardware_platforms.get('system11'):
+                return
             if msg[0:8] == "DL:13,C1":
                 print("Platforms: %s" % self.machine.hardware_platforms)
                 self.machine.clock.schedule_once(
