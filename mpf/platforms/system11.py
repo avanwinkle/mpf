@@ -128,6 +128,8 @@ class System11OverlayPlatform(DriverPlatform, SwitchPlatform):
         self.log.info("Configuring System11 driver to prefer C side on event %s",
                       self.system11_config['prefer_c_side_event'])
 
+        self.machine.events.add_handler("force_ac_relay_disabled", self._enable_a_side)
+
     def _prefer_a_side(self, **kwargs):
         del kwargs
         self.prefer_a_side = True
@@ -335,7 +337,8 @@ class System11OverlayPlatform(DriverPlatform, SwitchPlatform):
 
     # -------------------------------- A SIDE ---------------------------------
 
-    def _enable_a_side(self):
+    def _enable_a_side(self, **kwargs):
+        del kwargs
         if self.prefer_a_side:
             if not self.a_side_enabled and not self.ac_relay_in_transition:
 
