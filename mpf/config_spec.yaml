@@ -620,11 +620,11 @@ fast:
     net_buffer: single|int|10
     rgb_buffer: single|int|3
     dmd_buffer: single|int|3
-    segment_buffer: single|int|4
     console_log: single|enum(none,basic,full)|none
     file_log: single|enum(none,basic,full)|basic
     firmware_updates: list|subconfig(fast_firmware_update)|None
     ignore_rgb_crash: single|bool|false
+    segment_display_update_hz: single|int|20
 fast_firmware_update:
     type: single|enum(net,rgb)|
     file: single|str|
@@ -780,6 +780,7 @@ light_segment_displays:
     __valid_in__: machine
     __type__: config
     display_flash_frequency: single|float|1.0
+    display_flash_duty: single|float|0.5
 light_stripes:
     __valid_in__: machine
     __type__: device
@@ -838,6 +839,7 @@ lisy:
     baud: single|int|None
     debug: single|bool|false
     display_flash_frequency: single|float|1.0
+    display_flash_duty: single|float|0.5
     disable_dtr: single|bool|true
     connection: single|enum(network,serial)|network
     console_log: single|enum(none,basic,full)|none
@@ -1070,6 +1072,7 @@ p_roc:
     dmd_timing_cycles: list|int|None
     dmd_update_interval: single|ms|33ms
     display_flash_frequency: single|float|1.0
+    display_flash_duty: single|float|0.5
     debug: single|bool|false
     console_log: single|enum(none,basic,full)|none
     file_log: single|enum(none,basic,full)|basic
@@ -1445,7 +1448,13 @@ shots:
     restart_events: event_handler|event_handler:ms|None
     advance_events: event_handler|event_handler:ms|None
     hit_events: event_handler|event_handler:ms|None
+    control_events: list|subconfig(shot_control_events)|None
     show_tokens: dict|str:template_str|None
+shot_control_events:
+    events: list|event_handler|
+    state: single|int|
+    force: single|bool|true
+    force_show: single|bool|false
 shot_groups:
     __valid_in__: mode
     __type__: device
