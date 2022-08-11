@@ -353,6 +353,18 @@ class FASTDriver:
         self.autofire_config = None
         self.communicator.send_and_forget(f'{self.communicator.TRIGGER_CMD}:{self.hw_number},02')
 
+    def set_relay(self, relay_switch, debounce_closed_ms, debounce_open_ms):
+        """Set an AC Relay rule with virtual switch."""
+        cmd = '{}{},81,{},25,{},{}'.format(
+            self.get_config_cmd(),
+            self.number,
+            relay_switch.number[0], # FAST switch numbers are tuples
+            hex(debounce_closed_ms)[2:],
+            hex(debounce_open_ms)[2:]
+        )
+        self.log.debug("Setting AC Relay command: %s", cmd)
+        self.send(cmd)
+
     def enable(self, pulse_settings: PulseSettings, hold_settings: HoldSettings):
         """Enable (turn on) this driver."""
 
