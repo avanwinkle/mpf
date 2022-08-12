@@ -79,8 +79,8 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         else:
             self.raise_config_error(f'Unknown machine_type "{self.machine_type}" configured fast.', 6)
 
-        # Most FAST platforms don't use ticks, but System11 does
-        self.features['tickless'] = self.machine_type != 'sys11'
+        # Even though System11 uses ticks, that's handled on the Overlay and not needed here.
+        self.features['tickless'] = True
         self.features['max_pulse'] = 25500
 
         self.serial_connections = dict()
