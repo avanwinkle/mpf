@@ -25,7 +25,7 @@ class ScoreReel(SystemWideDevice):
     class_label = 'score_reel'
 
     def __init__(self, machine, name):
-        """Initialise score reel."""
+        """initialize score reel."""
         super().__init__(machine, name)
         self.delay = DelayManager(machine)
 
@@ -68,7 +68,7 @@ class ScoreReel(SystemWideDevice):
         for value in range(num_values):
             self.value_switches.append(self.config.get('switch_' + str(value)))
 
-        self._runner = self.machine.clock.loop.create_task(self._run())
+        self._runner = asyncio.create_task(self._run())
         self._runner.add_done_callback(Util.raise_exceptions)
 
     def stop(self, **kwargs):

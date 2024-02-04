@@ -18,7 +18,7 @@ class Auditor:
     __slots__ = ["log", "machine", "switchnames_to_audit", "config", "current_audits", "enabled", "data_manager"]
 
     def __init__(self, machine: "MachineController") -> None:
-        """Initialise auditor.
+        """initialize auditor.
 
         Args:
         ----
@@ -224,7 +224,7 @@ class Auditor:
                         self.current_audits['player'][item]['top'],
                         self.config['num_player_top_records']))
 
-                self.current_audits['player'][item]['average'] = (
+                self.current_audits['player'][item]['average'] = int(
                     ((self.current_audits['player'][item]['total'] *
                       self.current_audits['player'][item]['average']) +
                      self.machine.game.player[item]) /

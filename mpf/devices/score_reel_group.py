@@ -26,7 +26,7 @@ class ScoreReelGroup(SystemWideDevice):
         machine.score_reel_controller = ScoreReelController(machine)
 
     def __init__(self, machine, name):
-        """Initialise score reel group."""
+        """initialize score reel group."""
         super().__init__(machine, name)
 
         self.wait_for_valid_queue = None
@@ -114,14 +114,11 @@ class ScoreReelGroup(SystemWideDevice):
 
             self.reels[i].set_destination_value(self.desired_value_list[i])
 
-    def wait_for_ready(self):
+    async def wait_for_ready(self):
         """Return a future which will be done when all reels reached their destination."""
-        futures = []
         for reel in self.reels:
             if reel:
-                futures.append(reel.wait_for_ready())
-
-        return asyncio.wait(iter(futures))
+                await reel.wait_for_ready()
 
     def int_to_reel_list(self, value):
         """Convert an integer to a list of integers that represent each positional digit in this ScoreReelGroup.
