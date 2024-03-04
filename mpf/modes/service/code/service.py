@@ -471,11 +471,13 @@ sort_devices_by_number: single|bool|True
         color_position = 0
         colors = ["white", "red", "green", "blue", "yellow"]
         items = self.machine.service.get_light_map(do_sort=self._do_sort)
-
+        self.info_log("get_light_map reveals:")
+        self.info_log(items)
         # Categorize by platform and address
         chain_lookup = {}
         for board, l in items:
             numbers = l.get_hw_numbers()
+            self.info_log("Found hw numbers for l %s: %s", l, numbers)
             chain_2 = None
             # Just choose the first one as representative?
             number = numbers[0]
@@ -532,6 +534,8 @@ sort_devices_by_number: single|bool|True
 
         while True:
             self._update_light_chain_slide(items, position, colors[color_position])
+            self.info_log("Found the following light chain:")
+            self.info_log(items[position].light)
             for addr, l in items[position].light:
                 l.color(colors[color_position], key="service", priority=1000000)
 
