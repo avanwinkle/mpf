@@ -243,6 +243,7 @@ class SwitchCounter(PhysicalBallCounter):
 
         if not waiters:
             self.ball_device.log.warning("No switch is active. Cannot wait on empty list.")
+            self.machine.ball_controller.dump_ball_counts()
             future = asyncio.Future()
             future.set_result(True)
             return future

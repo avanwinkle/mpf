@@ -177,9 +177,10 @@ class BallController(MpfController):
 
     def dump_ball_counts(self) -> None:
         """Dump ball count of all devices."""
-        self.info_log("Known balls: %s", self.num_balls_known)
+        self.warning_log("Known balls: %s", self.num_balls_known)
         for device in self.machine.ball_devices.values():
-            self.info_log("%s contains %s balls. Tags %s", device.name, device.balls, device.tags)
+            self.warning_log("%s contains %s balls. Tags %s", device.name, device.balls, device.tags)
+        self.warning_log("Active switches: %s", ", ".join([s.name for s in self.machine.switches if s.state==1]))
 
     async def wait_until_playfields_are_empty(self):
         """Wait until balls reached their home positions."""
@@ -212,9 +213,9 @@ class BallController(MpfController):
             balls = -1
         self.debug_log("Received request to start game.")
         if balls < self.machine.config['machine']['min_balls']:
-            self.dump_ball_counts()
             self.warning_log("BallController denies game start. Not enough "
                              "balls. %s found. %s required", balls, self.machine.config['machine']['min_balls'])
+            self.dump_ball_counts()
 
             self.info_log("Triggering ball search.")
             for playfield in self.machine.playfields.values():
@@ -230,9 +231,9 @@ class BallController(MpfController):
         if (not self.machine.config['game']['allow_start_with_loose_balls'] and
                 not self.are_balls_collected(allowed_positions)):
             self.collect_balls('home')
-            self.dump_ball_counts()
             self.warning_log("BallController denies game start. Balls are not "
                              "in their home positions.")
+            self.dump_ball_counts()
             return False
 
         # allow start
